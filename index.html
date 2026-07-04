@@ -1,1 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QueueSmart</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>QueueSmart</h1>
+    <p>Smart Queue Management Application</p>
+  </header>
 
+  <main>
+    <section>
+      <h2>Welcome to QueueSmart</h2>
+      <p>This front-end demo supports both users and administrators.</p>
+
+      <button onclick="showScreen('login')">Login</button>
+      <button onclick="showScreen('register')">Register</button>
+      <button onclick="showScreen('userDashboard')">User Dashboard</button>
+      <button onclick="showScreen('adminDashboard')">Admin Dashboard</button>
+    </section>
+
+    <section id="login" class="screen">
+      <h2>Login</h2>
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      <button>Login</button>
+    </section>
+
+    <section id="register" class="screen">
+      <h2>Registration</h2>
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      <button>Register</button>
+    </section>
+
+    <section id="userDashboard" class="screen">
+      <h2>User Dashboard</h2>
+      <p>Current Queue Status: Waiting</p>
+      <p>Available Services: Advising, Financial Aid, IT Help Desk</p>
+      <p>Notifications: Your turn is coming soon.</p>
+    </section>
+
+    <section id="adminDashboard" class="screen">
+      <h2>Admin Dashboard</h2>
+      <p>Services: Advising, Financial Aid, IT Help Desk</p>
+      <p>Current Queue Length: 12 users</p>
+      <button>Open Queue</button>
+      <button>Close Queue</button>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
