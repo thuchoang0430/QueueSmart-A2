@@ -47,6 +47,70 @@
       <p>Available Services: Advising, Financial Aid, IT Help Desk</p>
       <p>Notifications: Your turn is coming soon.</p>
     </section>
+    <section id="joinQueue" class="screen">
+  <h2>Join Queue</h2>
+  <p>Select a service to view the estimated wait time and join the queue.</p>
+
+  <label for="serviceSelect">Select Service:</label>
+  <select id="serviceSelect" onchange="updateServiceInfo()">
+    <option value="">-- Choose a Service --</option>
+    <option value="Advising">Academic Advising</option>
+    <option value="Financial Aid">Financial Aid</option>
+    <option value="IT Help Desk">IT Help Desk</option>
+  </select>
+
+  <p id="waitTime">Estimated Wait Time: Please select a service.</p>
+  <p id="queueLength">People Waiting: -</p>
+
+  <button onclick="joinQueue()">Join Queue</button>
+  <button onclick="leaveQueue()">Leave Queue</button>
+
+  <p id="joinMessage" class="message"></p>
+</section>
+
+<section id="queueStatus" class="screen">
+  <h2>Queue Status</h2>
+
+  <div class="card">
+    <p><strong>Service:</strong> <span id="statusService">No active queue</span></p>
+    <p><strong>Current Position:</strong> <span id="statusPosition">-</span></p>
+    <p><strong>Estimated Wait Time:</strong> <span id="statusWait">-</span></p>
+    <p><strong>Status:</strong> <span id="statusText">Not joined</span></p>
+  </div>
+
+  <div class="card">
+    <h3>Notification</h3>
+    <p id="statusNotification">You have not joined a queue yet.</p>
+  </div>
+</section>
+
+<section id="history" class="screen">
+  <h2>Queue History</h2>
+  <p>Past queues joined by the user.</p>
+
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Service Name</th>
+      <th>Outcome</th>
+    </tr>
+    <tr>
+      <td>July 5, 2026</td>
+      <td>Academic Advising</td>
+      <td>Served</td>
+    </tr>
+    <tr>
+      <td>July 3, 2026</td>
+      <td>Financial Aid</td>
+      <td>Left Queue</td>
+    </tr>
+    <tr>
+      <td>July 1, 2026</td>
+      <td>IT Help Desk</td>
+      <td>Served</td>
+    </tr>
+  </table>
+</section>
 
     <section id="adminDashboard" class="screen">
       <h2>Admin Dashboard</h2>
