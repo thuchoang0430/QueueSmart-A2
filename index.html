@@ -21,6 +21,7 @@
       <button onclick="showScreen('register')">Register</button>
       <button onclick="showScreen('userDashboard')">User Dashboard</button>
       <button onclick="showScreen('adminDashboard')">Admin Dashboard</button>
+      <button onclick="showScreen('queueManagement')">Queue Management</button>
     </section>
 
     <section id="login" class="screen">
@@ -51,6 +52,61 @@
       <button>Open Queue</button>
       <button>Close Queue</button>
     </section>
+    <section id="queueManagement" class="screen">
+  <h2>Queue Management</h2>
+  <p>Admin can view and manage the queue for each service.</p>
+
+  <label for="adminService">Select Service:</label>
+  <select id="adminService">
+    <option value="Advising">Advising</option>
+    <option value="Financial Aid">Financial Aid</option>
+    <option value="IT Help Desk">IT Help Desk</option>
+  </select>
+
+  <div class="card">
+    <h3>Current Queue</h3>
+
+    <table>
+      <tr>
+        <th>Position</th>
+        <th>Name</th>
+        <th>Service</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Student A</td>
+        <td>Advising</td>
+        <td>Waiting</td>
+        <td>
+          <button>Serve Next</button>
+          <button>Remove</button>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Student B</td>
+        <td>Advising</td>
+        <td>Waiting</td>
+        <td>
+          <button>Move Up</button>
+          <button>Remove</button>
+        </td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Student C</td>
+        <td>Advising</td>
+        <td>Waiting</td>
+        <td>
+          <button>Move Up</button>
+          <button>Remove</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</section>
   </main>
 
   <script src="js/app.js"></script>
