@@ -11,6 +11,7 @@ interface ServicesContextValue {
   removeService: (id: number) => void
   queues: QueueMap
   getQueue: (serviceId: number) => QueueUser[]
+  joinQueue: (serviceId: number, user: { name: string; email: string }) => void
   moveQueueUser: (serviceId: number, userId: string, direction: 'up' | 'down') => void
   removeFromQueue: (serviceId: number, userId: string) => void
   serveNextUser: (serviceId: number) => QueueUser | null
@@ -57,6 +58,26 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     return queues[serviceId] ?? []
   }
 
+  function joinQueue(serviceId: number, user: { name: string; email: string }) {
+  setQueues((prev) => {
+    const list = prev[serviceId] ?? []
+
+    const alreadyInQueue = list.some((u) => u.email === user.email)
+    if (alreadyInQueue) return prev
+
+    const newUser: QueueUser = {
+      id: `${serviceId}-${user.email}`,
+      name: user.name,
+      email: user.email,
+      joinedMinutesAgo: 0,
+    }
+
+    return {
+      ...prev,
+      [serviceId]: [...list, newUser],
+    }
+  })
+}
   function moveQueueUser(serviceId: number, userId: string, direction: 'up' | 'down') {
     setQueues((prev) => {
       const list = [...(prev[serviceId] ?? [])]
