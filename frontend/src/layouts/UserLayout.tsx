@@ -1,5 +1,6 @@
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import Topbar from '../components/Topbar'
+import { useAuth } from '../context/AuthContext'
 
 const USER_LINKS = [
   { to: '/dashboard', label: 'Dashboard', end: true },
@@ -9,9 +10,14 @@ const USER_LINKS = [
 ]
 
 export default function UserLayout() {
+  const { currentUser, logout } = useAuth()
+
+  if (!currentUser) return <Navigate to="/" replace />
+  if (currentUser.role !== 'user') return <Navigate to="/admin" replace />
+
   return (
     <>
-      <Topbar brand="QueueSmart" links={USER_LINKS} email="user@test.com" />
+      <Topbar brand="QueueSmart" links={USER_LINKS} email={currentUser.email} onLogout={logout} />
       <Outlet />
     </>
   )
