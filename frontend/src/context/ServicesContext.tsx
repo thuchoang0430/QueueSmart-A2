@@ -117,6 +117,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         removeService,
         queues,
         getQueue,
+        joinQueue,
         moveQueueUser,
         removeFromQueue,
         serveNextUser,
