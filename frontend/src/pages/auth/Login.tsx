@@ -1,4 +1,3 @@
-```tsx
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import loginImage from "../../assets/register_login_image.png";
