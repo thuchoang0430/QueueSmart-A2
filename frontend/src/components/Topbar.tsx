@@ -10,9 +10,10 @@ interface TopbarProps {
   brand: string
   links: TopbarLink[]
   email: string
+  onLogout?: () => void
 }
 
-export default function Topbar({ brand, links, email }: TopbarProps) {
+export default function Topbar({ brand, links, email, onLogout }: TopbarProps) {
   return (
     <header className="topbar">
       <div className="logo">{brand}</div>
@@ -30,7 +31,7 @@ export default function Topbar({ brand, links, email }: TopbarProps) {
       </nav>
       <div className="user-menu">
         <span className="email">{email}</span>
-        <button className="logout-btn" type="button">Log out</button>
+        <button className="logout-btn" type="button" onClick={onLogout}>Log out</button>
       </div>
     </header>
   )

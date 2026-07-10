@@ -23,7 +23,7 @@ export const initialServices: Service[] = [
     description: 'Technical support for student accounts, devices, and campus wifi.',
     duration: 15,
     priority: 'low',
-    status: 'closed',
+    status: 'open',
   },
 ]
 

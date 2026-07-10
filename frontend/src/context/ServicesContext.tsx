@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { initialServices } from '../data/mockServices'
 import { initialQueues } from '../data/mockQueues'
-import type { NewServiceInput, QueueMap, QueueUser, Service } from '../types'
+import type { ActivityLogEntry, NewServiceInput, QueueMap, QueueUser, Service } from '../types'
+
+const ACTIVITY_LOG_LIMIT = 20
 
 interface ServicesContextValue {
   services: Service[]
@@ -11,52 +13,95 @@ interface ServicesContextValue {
   removeService: (id: number) => void
   queues: QueueMap
   getQueue: (serviceId: number) => QueueUser[]
+  joinQueue: (serviceId: number, user: { name: string; email: string }) => void
   moveQueueUser: (serviceId: number, userId: string, direction: 'up' | 'down') => void
   removeFromQueue: (serviceId: number, userId: string) => void
   serveNextUser: (serviceId: number) => QueueUser | null
+  activityLog: ActivityLogEntry[]
 }
 
 const ServicesContext = createContext<ServicesContextValue | null>(null)
 
 let nextServiceId = initialServices.length + 1
+let nextActivityId = 1
 
 export function ServicesProvider({ children }: { children: ReactNode }) {
   const [services, setServices] = useState<Service[]>(initialServices)
   const [queues, setQueues] = useState<QueueMap>(initialQueues)
+  const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([])
+
+  function logActivity(message: string) {
+    const entry: ActivityLogEntry = {
+      id: `activity-${nextActivityId++}`,
+      message,
+      timestamp: Date.now(),
+    }
+    setActivityLog((prev) => [entry, ...prev].slice(0, ACTIVITY_LOG_LIMIT))
+  }
 
   function addService(service: NewServiceInput) {
     const id = nextServiceId++
     setServices((prev) => [...prev, { ...service, id, status: 'open' }])
     setQueues((prev) => ({ ...prev, [id]: [] }))
+    logActivity(`Created service "${service.name}"`)
   }
 
   function updateService(id: number, changes: Partial<Service>) {
     setServices((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...changes } : s))
     )
+    const name = changes.name ?? services.find((s) => s.id === id)?.name
+    logActivity(`Updated service "${name}"`)
   }
 
   function toggleServiceStatus(id: number) {
+    const target = services.find((s) => s.id === id)
     setServices((prev) =>
       prev.map((s) =>
         s.id === id ? { ...s, status: s.status === 'open' ? 'closed' : 'open' } : s
       )
     )
+    if (target) {
+      const nextStatus = target.status === 'open' ? 'closed' : 'open'
+      logActivity(`${nextStatus === 'open' ? 'Opened' : 'Closed'} queue for "${target.name}"`)
+    }
   }
 
   function removeService(id: number) {
+    const target = services.find((s) => s.id === id)
     setServices((prev) => prev.filter((s) => s.id !== id))
     setQueues((prev) => {
       const next = { ...prev }
       delete next[id]
       return next
     })
+    if (target) logActivity(`Deleted service "${target.name}"`)
   }
 
   function getQueue(serviceId: number): QueueUser[] {
     return queues[serviceId] ?? []
   }
 
+  function joinQueue(serviceId: number, user: { name: string; email: string }) {
+  setQueues((prev) => {
+    const list = prev[serviceId] ?? []
+
+    const alreadyInQueue = list.some((u) => u.email === user.email)
+    if (alreadyInQueue) return prev
+
+    const newUser: QueueUser = {
+      id: `${serviceId}-${user.email}`,
+      name: user.name,
+      email: user.email,
+      joinedMinutesAgo: 0,
+    }
+
+    return {
+      ...prev,
+      [serviceId]: [...list, newUser],
+    }
+  })
+}
   function moveQueueUser(serviceId: number, userId: string, direction: 'up' | 'down') {
     setQueues((prev) => {
       const list = [...(prev[serviceId] ?? [])]
@@ -96,9 +141,11 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         removeService,
         queues,
         getQueue,
+        joinQueue,
         moveQueueUser,
         removeFromQueue,
         serveNextUser,
+        activityLog,
       }}
     >
       {children}

@@ -25,3 +25,9 @@ export interface QueueUser {
 }
 
 export type QueueMap = Record<number, QueueUser[]>
+
+export interface ActivityLogEntry {
+  id: string
+  message: string
+  timestamp: number
+}
