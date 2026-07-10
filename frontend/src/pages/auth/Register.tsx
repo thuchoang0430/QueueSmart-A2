@@ -347,4 +347,3 @@ function Input({
 }
 
 export default Register;
-```
