@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useServices } from '../../context/ServicesContext'
 import ServiceForm from './components/ServiceForm'
-import type { NewServiceInput, Priority } from '../../types'
+import type { NewServiceInput, Priority, Service } from '../../types'
 
 const priorityBadge: Record<Priority, string> = {
   low: 'badge-gray',
@@ -14,6 +14,7 @@ type Mode = 'create' | { id: number } | null
 export default function ServiceManagement() {
   const { services, addService, updateService, removeService } = useServices()
   const [mode, setMode] = useState<Mode>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Service | null>(null)
 
   const editingService =
     mode && mode !== 'create' ? services.find((s) => s.id === mode.id) : null
@@ -25,6 +26,12 @@ export default function ServiceManagement() {
       updateService(editingService.id, values)
     }
     setMode(null)
+  }
+
+  function handleDeleteConfirmed() {
+    if (!confirmDelete) return
+    removeService(confirmDelete.id)
+    setConfirmDelete(null)
   }
 
   return (
@@ -87,7 +94,7 @@ export default function ServiceManagement() {
                           <button
                             type="button"
                             className="btn btn-danger btn-sm"
-                            onClick={() => removeService(s.id)}
+                            onClick={() => setConfirmDelete(s)}
                           >
                             Delete
                           </button>
@@ -100,6 +107,25 @@ export default function ServiceManagement() {
             )}
           </div>
         </>
+      )}
+
+      {confirmDelete && (
+        <div className="modal-backdrop show" onClick={(e) => e.target === e.currentTarget && setConfirmDelete(null)}>
+          <div className="modal">
+            <h2>Delete service?</h2>
+            <p className="subtitle">
+              "{confirmDelete.name}" will be permanently removed, along with its queue. This can't be undone.
+            </p>
+            <div className="btn-row" style={{ justifyContent: 'flex-end', marginTop: 24 }}>
+              <button type="button" className="btn btn-secondary" onClick={() => setConfirmDelete(null)}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-danger" onClick={handleDeleteConfirmed}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
