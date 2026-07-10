@@ -1,0 +1,6 @@
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/preflight" layer(base);
+@layer legacy {
+  @import './styles.css';
+}
+@import "tailwindcss/utilities" layer(utilities);
