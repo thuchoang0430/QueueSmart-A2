@@ -8,11 +8,22 @@ const priorityBadge: Record<Priority, string> = {
   high: 'badge-danger',
 }
 
+function formatRelativeTime(timestamp: number): string {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000)
+  if (seconds < 5) return 'just now'
+  if (seconds < 60) return `${seconds}s ago`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  return `${hours}h ago`
+}
+
 export default function AdminDashboard() {
-  const { services, toggleServiceStatus, getQueue } = useServices()
+  const { services, toggleServiceStatus, getQueue, activityLog } = useServices()
 
   const openCount = services.filter((s) => s.status === 'open').length
   const totalWaiting = services.reduce((sum, s) => sum + getQueue(s.id).length, 0)
+  const recentActivity = activityLog.slice(0, 5)
 
   return (
     <div className="container">
@@ -85,6 +96,25 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+        )}
+      </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <h2>Recent Activity</h2>
+        {recentActivity.length === 0 ? (
+          <p className="empty">No admin activity yet — actions you take will show up here.</p>
+        ) : (
+          <ul className="notification-list">
+            {recentActivity.map((entry) => (
+              <li className="notification-item" key={entry.id}>
+                <div className="dot" />
+                <div className="content">
+                  <div className="msg">{entry.message}</div>
+                  <div className="time">{formatRelativeTime(entry.timestamp)}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>
