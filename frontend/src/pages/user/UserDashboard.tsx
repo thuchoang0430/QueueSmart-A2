@@ -1,4 +1,12 @@
 import type { ReactElement } from "react";
+import { Link, NavLink } from "react-router-dom";
+
+const SIDEBAR_LINKS = [
+  { to: "/dashboard", label: "Dashboard", icon: "🖥️", end: true },
+  { to: "/join-queue", label: "Join Queue", icon: "➕" },
+  { to: "/queue-status", label: "Queue Status", icon: "⏳" },
+  { to: "/history", label: "History", icon: "🕧" },
+];
 
 function UserDashboard(): ReactElement {
   return (
@@ -27,18 +35,22 @@ function UserDashboard(): ReactElement {
           </div>
 
           <div className="space-y-5">
-            <div className="bg-blue-600 rounded-2xl py-2 px-2">
-              <p className="font-bold">🖥️ Dashboard</p>
-            </div>
-            <div className="text-slate-300 py-2 px-2">
-              <p>➕ Join Queue</p>
-            </div>
-            <div className="text-slate-300 py-2 px-2">
-              <p>⏳ Queue Status</p>
-            </div>
-            <div className="text-slate-300 py-2 px-2">
-              <p>🕧 History</p>
-            </div>
+            {SIDEBAR_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  `block rounded-2xl py-2 px-2 ${
+                    isActive ? "bg-blue-600 font-bold" : "text-slate-300"
+                  }`
+                }
+              >
+                <p>
+                  {link.icon} {link.label}
+                </p>
+              </NavLink>
+            ))}
             <div className="text-slate-300 py-2 px-2">
               <p>🔔 Notifications</p>
             </div>
@@ -79,12 +91,18 @@ function UserDashboard(): ReactElement {
             </div>
 
             <div className="flex flex-wrap gap-3 justify-center items-center text-xl border border-slate-200 px-5 py-5 rounded-2xl shadow-sm">
-              <span className="border border-slate-200 rounded-2xl px-2 py-2 font-semibold text-slate-600">
+              <Link
+                to="/history"
+                className="border border-slate-200 rounded-2xl px-2 py-2 font-semibold text-slate-600"
+              >
                 🕛 View History
-              </span>
-              <span className="border border-slate-200 rounded-2xl px-2 py-2 bg-blue-600 text-white font-semibold">
+              </Link>
+              <Link
+                to="/join-queue"
+                className="border border-slate-200 rounded-2xl px-2 py-2 bg-blue-600 text-white font-semibold"
+              >
                 + Join Queue
-              </span>
+              </Link>
               <span className="px-2 py-2 rounded-full bg-slate-600 text-white font-semibold text-4xl">
                 U
               </span>
@@ -300,11 +318,12 @@ function UserDashboard(): ReactElement {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 text-center">
-                <div>
-                  <p className="px-2 py-2 bg-blue-600 text-white rounded-2xl">
-                    View Queue Status
-                  </p>
-                </div>
+                <Link
+                  to="/queue-status"
+                  className="block px-2 py-2 bg-blue-600 text-white rounded-2xl"
+                >
+                  View Queue Status
+                </Link>
                 <div>
                   <p className="px-2 py-2 bg-white border border-slate-200 shadow-sm rounded-2xl">
                     Leave Queue
@@ -354,12 +373,12 @@ function UserDashboard(): ReactElement {
                 </h2>
               </div>
 
-              <button
-                type="button"
+              <Link
+                to="/join-queue"
                 className="w-fit rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
               >
                 View All Services
-              </button>
+              </Link>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -384,12 +403,12 @@ function UserDashboard(): ReactElement {
                   <p className="mt-1 font-bold text-slate-950">15 minutes</p>
                 </div>
 
-                <button
-                  type="button"
-                  className="mt-4 w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-800"
+                <Link
+                  to="/join-queue"
+                  className="mt-4 block w-full rounded-xl bg-blue-700 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-blue-800"
                 >
                   Join Queue
-                </button>
+                </Link>
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-md">
@@ -413,12 +432,12 @@ function UserDashboard(): ReactElement {
                   <p className="mt-1 font-bold text-slate-950">15 minutes</p>
                 </div>
 
-                <button
-                  type="button"
-                  className="mt-4 w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-800"
+                <Link
+                  to="/join-queue"
+                  className="mt-4 block w-full rounded-xl bg-blue-700 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-blue-800"
                 >
                   Join Queue
-                </button>
+                </Link>
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-md">
@@ -442,12 +461,12 @@ function UserDashboard(): ReactElement {
                   <p className="mt-1 font-bold text-slate-950">25 minutes</p>
                 </div>
 
-                <button
-                  type="button"
-                  className="mt-4 w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-800"
+                <Link
+                  to="/join-queue"
+                  className="mt-4 block w-full rounded-xl bg-blue-700 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-blue-800"
                 >
                   Join Queue
-                </button>
+                </Link>
               </div>
             </div>
           </section>
@@ -458,4 +477,3 @@ function UserDashboard(): ReactElement {
 }
 
 export default UserDashboard;
-
