@@ -2,18 +2,16 @@ import { ApiError } from '../../errors'
 import { nextId, store, type Service } from '../../store/memoryStore'
 import { validateOrThrow, type Schema } from '../../validation/validators'
 
-// REFERENCE MODULE - copy this file/controller/routes trio when building the
-// auth, queue, notification and history modules.
-//
-// The rule that keeps this testable: everything below is plain logic over the
-// store. No `req`, no `res`, no Express imports. Unit tests call these
-// functions directly, which is where most of the coverage target comes from.
+// Service Management module for A3.
+// This file holds the service rules, validation schemas, and plain store logic.
+// Controllers call these functions, and tests can call the API without touching
+// Express internals.
 
 export const PRIORITY_LEVELS = ['low', 'medium', 'high'] as const
 export const SERVICE_STATUSES = ['open', 'closed'] as const
 
-export const createServiceSchema: Schema = {
-  name: { required: true, type: 'string', minLength: 2, maxLength: 50, label: 'Service name' },
+export const serviceInputSchema: Schema = {
+  name: { required: true, type: 'string', minLength: 2, maxLength: 100, label: 'Service name' },
   description: {
     required: true,
     type: 'string',
@@ -25,11 +23,19 @@ export const createServiceSchema: Schema = {
   priority: { required: true, type: 'string', oneOf: PRIORITY_LEVELS, label: 'Priority level' },
 }
 
+export const serviceStatusSchema: Schema = {
+  status: { required: true, type: 'string', oneOf: SERVICE_STATUSES, label: 'Service status' },
+}
+
 export interface NewServiceInput {
   name: string
   description: string
   duration: number
   priority: (typeof PRIORITY_LEVELS)[number]
+}
+
+export interface ServiceStatusInput {
+  status: (typeof SERVICE_STATUSES)[number]
 }
 
 export function listServices(): Service[] {
@@ -42,15 +48,22 @@ export function getServiceById(id: number): Service {
   return service
 }
 
-export function createService(input: unknown): Service {
-  validateOrThrow(input, createServiceSchema)
-  const data = input as NewServiceInput
+function ensureUniqueServiceName(name: string, currentId?: number): void {
+  const duplicate = store.services.some(
+    (s) => s.id !== currentId && s.name.toLowerCase() === name.toLowerCase()
+  )
 
-  const name = data.name.trim()
-  const duplicate = store.services.some((s) => s.name.toLowerCase() === name.toLowerCase())
   if (duplicate) {
     throw ApiError.conflict(`A service named "${name}" already exists.`)
   }
+}
+
+export function createService(input: unknown): Service {
+  validateOrThrow(input, serviceInputSchema)
+  const data = input as NewServiceInput
+  const name = data.name.trim()
+
+  ensureUniqueServiceName(name)
 
   const service: Service = {
     id: nextId('services'),
@@ -63,4 +76,29 @@ export function createService(input: unknown): Service {
 
   store.services.push(service)
   return service
+}
+
+export function updateService(id: number, input: unknown): Service {
+  validateOrThrow(input, serviceInputSchema)
+  const data = input as NewServiceInput
+  const existing = getServiceById(id)
+  const name = data.name.trim()
+
+  ensureUniqueServiceName(name, id)
+
+  existing.name = name
+  existing.description = data.description.trim()
+  existing.duration = data.duration
+  existing.priority = data.priority
+
+  return existing
+}
+
+export function updateServiceStatus(id: number, input: unknown): Service {
+  validateOrThrow(input, serviceStatusSchema)
+  const data = input as ServiceStatusInput
+  const existing = getServiceById(id)
+
+  existing.status = data.status
+  return existing
 }
