@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { requireAuth, requireRole } from '../../middleware/auth'
 import {
   getService,
   getServices,
@@ -9,12 +10,18 @@ import {
 
 const router = Router()
 
+// Public routes
 router.get('/', getServices)
 router.get('/:id', getService)
-// TODO(services owner): these routes currently have no admin guard.
-// Add requireRole('admin') once Aldo's auth middleware lands.
-router.post('/', postService)
-router.put('/:id', putService)
-router.patch('/:id/status', patchServiceStatus)
+
+// Admin-only routes
+router.post('/', requireAuth, requireRole('admin'), postService)
+router.put('/:id', requireAuth, requireRole('admin'), putService)
+router.patch(
+  '/:id/status',
+  requireAuth,
+  requireRole('admin'),
+  patchServiceStatus
+)
 
 export default router

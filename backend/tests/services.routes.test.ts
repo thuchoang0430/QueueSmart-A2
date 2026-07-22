@@ -2,6 +2,7 @@ import request from 'supertest'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createApp } from '../src/app'
 import { resetStore } from '../src/store/memoryStore'
+import { adminToken, bearer } from './helpers'
 
 // Integration tests - these cover the controller, router and error handler
 // wiring that the pure unit tests deliberately skip.
@@ -54,6 +55,8 @@ describe('GET /api/services/:id', () => {
   })
 })
 
+// POST is admin only, so every request here carries an admin token. The guard
+// itself (401/403) is covered in auth.routes.test.ts.
 describe('POST /api/services', () => {
   const valid = {
     name: 'Career Services',
@@ -62,8 +65,12 @@ describe('POST /api/services', () => {
     priority: 'medium',
   }
 
+  function postService(body: object) {
+    return request(app).post('/api/services').set('Authorization', bearer(adminToken())).send(body)
+  }
+
   it('creates a service and returns 201', async () => {
-    const res = await request(app).post('/api/services').send(valid)
+    const res = await postService(valid)
     expect(res.status).toBe(201)
     expect(res.body.service).toMatchObject({ name: 'Career Services', status: 'open' })
 
@@ -72,7 +79,7 @@ describe('POST /api/services', () => {
   })
 
   it('400s with per-field messages when the body is empty', async () => {
-    const res = await request(app).post('/api/services').send({})
+    const res = await postService({})
     expect(res.status).toBe(400)
     expect(res.body.error.code).toBe('VALIDATION_ERROR')
     expect(Object.keys(res.body.error.fields).sort()).toEqual([
@@ -84,8 +91,8 @@ describe('POST /api/services', () => {
   })
 
   it('409s on a duplicate service name', async () => {
-    await request(app).post('/api/services').send(valid)
-    const res = await request(app).post('/api/services').send(valid)
+    await postService(valid)
+    const res = await postService(valid)
     expect(res.status).toBe(409)
     expect(res.body.error.code).toBe('CONFLICT')
   })
@@ -93,6 +100,7 @@ describe('POST /api/services', () => {
   it('400s on malformed JSON', async () => {
     const res = await request(app)
       .post('/api/services')
+      .set('Authorization', bearer(adminToken()))
       .set('Content-Type', 'application/json')
       .send('{ not json')
     expect(res.status).toBe(400)

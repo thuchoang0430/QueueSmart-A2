@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express, { type Express } from 'express'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler'
+import authRoutes from './modules/auth/auth.routes'
 import servicesRoutes from './modules/services/services.routes'
 
 /**
@@ -17,9 +18,9 @@ export function createApp(): Express {
     res.json({ status: 'ok' })
   })
 
+  app.use('/api/auth', authRoutes)
   app.use('/api/services', servicesRoutes)
   // Register new routers here:
-  // app.use('/api/auth', authRoutes)
   // app.use('/api/queues', queueRoutes)
   // app.use('/api/notifications', notificationRoutes)
   // app.use('/api/history', historyRoutes)
