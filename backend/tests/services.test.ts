@@ -2,12 +2,16 @@ import request from 'supertest'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createApp } from '../src/app'
 import { resetStore } from '../src/store/memoryStore'
+import { adminToken, bearer } from './helpers'
 
 const app = createApp()
 
 describe('Service Management API', () => {
+  let authorization: string
+
   beforeEach(() => {
     resetStore()
+    authorization = bearer(adminToken())
   })
 
   it('lists the seeded services', async () => {
@@ -24,6 +28,7 @@ describe('Service Management API', () => {
   it('creates a new service with valid input', async () => {
     const res = await request(app)
       .post('/api/services')
+      .set('Authorization', authorization)
       .send({
         name: 'Career Services',
         description: 'Resume, interview, and career support for students.',
@@ -43,7 +48,11 @@ describe('Service Management API', () => {
   })
 
   it('rejects create service requests with missing required fields', async () => {
-    const res = await request(app).post('/api/services').send({}).expect(400)
+    const res = await request(app)
+      .post('/api/services')
+      .set('Authorization', authorization)
+      .send({})
+      .expect(400)
 
     expect(res.body.error.code).toBe('VALIDATION_ERROR')
     expect(res.body.error.fields).toMatchObject({
@@ -57,6 +66,7 @@ describe('Service Management API', () => {
   it('rejects invalid duration and priority values', async () => {
     const res = await request(app)
       .post('/api/services')
+      .set('Authorization', authorization)
       .send({
         name: 'Bad Service',
         description: 'This request has bad values.',
@@ -65,13 +75,18 @@ describe('Service Management API', () => {
       })
       .expect(400)
 
-    expect(res.body.error.fields.duration).toBe('Expected duration must be at least 1.')
-    expect(res.body.error.fields.priority).toBe('Priority level must be one of: low, medium, high.')
+    expect(res.body.error.fields.duration).toBe(
+      'Expected duration must be at least 1.'
+    )
+    expect(res.body.error.fields.priority).toBe(
+      'Priority level must be one of: low, medium, high.'
+    )
   })
 
   it('rejects duplicate service names', async () => {
     const res = await request(app)
       .post('/api/services')
+      .set('Authorization', authorization)
       .send({
         name: 'Academic Advising',
         description: 'Duplicate service name should not be accepted.',
@@ -86,6 +101,7 @@ describe('Service Management API', () => {
   it('updates an existing service', async () => {
     const res = await request(app)
       .put('/api/services/1')
+      .set('Authorization', authorization)
       .send({
         name: 'Updated Advising',
         description: 'Updated academic advising description.',
@@ -107,6 +123,7 @@ describe('Service Management API', () => {
   it('returns 404 when updating a service that does not exist', async () => {
     const res = await request(app)
       .put('/api/services/999')
+      .set('Authorization', authorization)
       .send({
         name: 'Missing Service',
         description: 'This service does not exist.',
@@ -121,6 +138,7 @@ describe('Service Management API', () => {
   it('opens and closes a service status', async () => {
     const closeRes = await request(app)
       .patch('/api/services/1/status')
+      .set('Authorization', authorization)
       .send({ status: 'closed' })
       .expect(200)
 
@@ -128,6 +146,7 @@ describe('Service Management API', () => {
 
     const openRes = await request(app)
       .patch('/api/services/1/status')
+      .set('Authorization', authorization)
       .send({ status: 'open' })
       .expect(200)
 
@@ -137,10 +156,13 @@ describe('Service Management API', () => {
   it('rejects invalid service status values', async () => {
     const res = await request(app)
       .patch('/api/services/1/status')
+      .set('Authorization', authorization)
       .send({ status: 'paused' })
       .expect(400)
 
     expect(res.body.error.code).toBe('VALIDATION_ERROR')
-    expect(res.body.error.fields.status).toBe('Service status must be one of: open, closed.')
+    expect(res.body.error.fields.status).toBe(
+      'Service status must be one of: open, closed.'
+    )
   })
 })
