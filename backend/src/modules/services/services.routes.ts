@@ -1,13 +1,27 @@
 import { Router } from 'express'
 import { requireAuth, requireRole } from '../../middleware/auth'
-import { getService, getServices, postService } from './services.controller'
+import {
+  getService,
+  getServices,
+  patchServiceStatus,
+  postService,
+  putService,
+} from './services.controller'
 
 const router = Router()
 
-// Browsing services is public - the front end lists them before anyone signs in.
+// Public routes
 router.get('/', getServices)
 router.get('/:id', getService)
-// TODO(services owner): add PUT /:id and PATCH /:id/status, both admin only.
+
+// Admin-only routes
 router.post('/', requireAuth, requireRole('admin'), postService)
+router.put('/:id', requireAuth, requireRole('admin'), putService)
+router.patch(
+  '/:id/status',
+  requireAuth,
+  requireRole('admin'),
+  patchServiceStatus
+)
 
 export default router
