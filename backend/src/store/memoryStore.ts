@@ -73,9 +73,13 @@ export interface Store {
   queueEntries: QueueEntry[]
   history: HistoryRecord[]
   notifications: Notification[]
+  /** Login token -> user id. Cleared on restart, which is fine for A3. */
+  sessions: Map<string, number>
 }
 
-type Collection = keyof Store
+// `sessions` is keyed by token, not by a numeric id, so it is excluded from
+// the auto-increment counters below.
+type Collection = Exclude<keyof Store, 'sessions'>
 
 // Exported as a const object rather than a mutable binding so that
 // `import { store }` keeps working after a reset - resetStore() replaces the
@@ -86,6 +90,7 @@ export const store: Store = {
   queueEntries: [],
   history: [],
   notifications: [],
+  sessions: new Map(),
 }
 
 const counters: Record<Collection, number> = {
@@ -151,6 +156,7 @@ export function resetStore(): void {
   store.queueEntries = []
   store.history = []
   store.notifications = []
+  store.sessions = new Map()
 
   counters.users = store.users.length
   counters.services = store.services.length

@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import loginImage from "../../assets/register_login_image.png";
+import { ApiError } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import {
   FaEnvelope,
@@ -30,13 +31,14 @@ function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   function switchToRegister(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     navigate("/register");
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
 
@@ -45,17 +47,26 @@ function Login() {
       return;
     }
 
-    const user = login(email, password);
+    setSubmitting(true);
 
-    if (!user) {
-      setError("Invalid email or password.");
-      return;
-    }
+    try {
+      // Credentials are checked by the backend now - see
+      // backend/src/modules/auth/auth.service.ts
+      const user = await login(email, password);
 
-    if (user.role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/dashboard");
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.displayMessage
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -199,9 +210,10 @@ function Login() {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 font-bold text-white shadow-lg hover:opacity-90"
+                disabled={submitting}
+                className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 font-bold text-white shadow-lg hover:opacity-90 disabled:opacity-60"
               >
-                Sign In
+                {submitting ? "Signing in..." : "Sign In"}
               </button>
 
               <div className="flex items-center gap-4">

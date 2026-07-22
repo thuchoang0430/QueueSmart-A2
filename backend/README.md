@@ -59,6 +59,23 @@ see `createServiceSchema` in `modules/services/services.service.ts`.
 Every test file calls `resetStore()` in `beforeEach`. In-memory state is shared
 between tests otherwise.
 
+## Auth
+
+Protected routes chain the middleware from `src/middleware/auth.ts`:
+
+```ts
+router.post('/', requireAuth, requireRole('admin'), postService)
+```
+
+`requireAuth` puts the caller on `req.user`. 401 means "we don't know who you
+are", 403 means "we do, and you're not allowed".
+
+In tests, use the helpers: `adminToken()`, `userToken()`, `bearer(token)`.
+
+Sessions are a token → userId map in the store, not JWTs — with one process and
+no database there is nothing for a signed stateless token to buy us. Passwords
+are plain text for the same reason; hashing lands with persistence in A4.
+
 ## Adding a module
 
 1. `src/modules/<name>/<name>.service.ts` — logic + schema, no Express
@@ -73,8 +90,8 @@ between tests otherwise.
 | Module | Endpoints | Owner | Done |
 |---|---|---|---|
 | Foundation | `GET /api/health` | shared | ✅ |
-| Services | `GET /api/services`, `GET /api/services/:id`, `POST /api/services` | | partial — needs `PUT /:id`, `PATCH /:id/status`, admin guard |
-| Auth | `POST /api/auth/register`, `POST /api/auth/login` | | ⬜ |
+| Auth | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` | Andy | ✅ |
+| Services | `GET /api/services`, `GET /api/services/:id`, `POST /api/services` | | partial — needs `PUT /:id`, `PATCH /:id/status` |
 | Queue | `POST/DELETE /api/queues/:serviceId/join\|leave`, `GET /api/queues/:serviceId`, `POST /api/queues/:serviceId/serve-next`, `GET /api/queues/:serviceId/me` | | ⬜ |
 | Wait time | (logic used by queue) | | ⬜ |
 | Notifications | `GET /api/notifications` | | ⬜ |
