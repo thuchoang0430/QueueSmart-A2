@@ -2,6 +2,7 @@ import cors from 'cors'
 import express, { type Express } from 'express'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler'
 import authRoutes from './modules/auth/auth.routes'
+import historyRoutes from './modules/history/history.routes'
 import servicesRoutes from './modules/services/services.routes'
 
 /**
@@ -20,10 +21,10 @@ export function createApp(): Express {
 
   app.use('/api/auth', authRoutes)
   app.use('/api/services', servicesRoutes)
+  app.use('/api/history', historyRoutes)
   // Register new routers here:
   // app.use('/api/queues', queueRoutes)
   // app.use('/api/notifications', notificationRoutes)
-  // app.use('/api/history', historyRoutes)
 
   // These two must stay last - notFound catches unmatched routes and
   // errorHandler turns every thrown ApiError into the shared error body.

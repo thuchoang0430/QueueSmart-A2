@@ -145,6 +145,48 @@ function seedServices(): Service[] {
   ]
 }
 
+// A few past visits for the seeded student (id 1) so the History page shows
+// real backend data before anyone has actually used a queue. Once the queue
+// module records live outcomes (via recordHistory in the history module) these
+// sit alongside the real ones.
+const DAY_MS = 24 * 60 * 60 * 1000
+
+function seedHistory(): HistoryRecord[] {
+  const now = Date.now()
+  return [
+    {
+      id: 1,
+      userId: 1,
+      serviceId: 1,
+      serviceName: 'Academic Advising',
+      joinedAt: now - 5 * DAY_MS,
+      endedAt: now - 5 * DAY_MS + 18 * 60 * 1000,
+      waitMinutes: 18,
+      outcome: 'served',
+    },
+    {
+      id: 2,
+      userId: 1,
+      serviceId: 2,
+      serviceName: 'Financial Aid',
+      joinedAt: now - 3 * DAY_MS,
+      endedAt: now - 3 * DAY_MS + 10 * 60 * 1000,
+      waitMinutes: 10,
+      outcome: 'left',
+    },
+    {
+      id: 3,
+      userId: 1,
+      serviceId: 3,
+      serviceName: 'IT Help Desk',
+      joinedAt: now - 1 * DAY_MS,
+      endedAt: now - 1 * DAY_MS + 12 * 60 * 1000,
+      waitMinutes: 12,
+      outcome: 'served',
+    },
+  ]
+}
+
 /**
  * Restores the store to its seeded state. Every test file must call this in
  * `beforeEach` - in-memory state is shared across tests in a file and one
@@ -154,14 +196,14 @@ export function resetStore(): void {
   store.users = seedUsers()
   store.services = seedServices()
   store.queueEntries = []
-  store.history = []
+  store.history = seedHistory()
   store.notifications = []
   store.sessions = new Map()
 
   counters.users = store.users.length
   counters.services = store.services.length
   counters.queueEntries = 0
-  counters.history = 0
+  counters.history = store.history.length
   counters.notifications = 0
 }
 
