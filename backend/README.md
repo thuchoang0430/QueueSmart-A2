@@ -91,8 +91,13 @@ are plain text for the same reason; hashing lands with persistence in A4.
 |---|---|---|---|
 | Foundation | `GET /api/health` | shared | ✅ |
 | Auth | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` | Andy | ✅ |
-| Services | `GET /api/services`, `GET /api/services/:id`, `POST /api/services` | | partial — needs `PUT /:id`, `PATCH /:id/status` |
-| Queue | `POST/DELETE /api/queues/:serviceId/join\|leave`, `GET /api/queues/:serviceId`, `POST /api/queues/:serviceId/serve-next`, `GET /api/queues/:serviceId/me` | | ⬜ |
-| Wait time | (logic used by queue) | | ⬜ |
+| Services | `GET /api/services`, `GET /api/services/:id`, `POST`, `PUT /:id`, `PATCH /:id/status` | Ayush | ✅ backend (page not wired) |
+| Queue | `POST/DELETE /api/queues/:serviceId/join\|leave`, `GET /api/queues/:serviceId`, `POST /api/queues/:serviceId/serve-next`, `GET /api/queues/:serviceId/me` | Ngoc | 🟡 on branch, needs tests |
+| Wait time | (logic used by queue) | Ngoc | 🟡 on branch |
 | Notifications | `GET /api/notifications` | | ⬜ |
-| History | `GET /api/history` | | ⬜ |
+| History | `GET /api/history` | Andy | ✅ |
+
+**Queue → History hook:** when the queue module removes a user (leave or
+serve-next), call `recordHistory(...)` from `modules/history/history.service.ts`
+so the visit shows up on the History page. That is the only wiring history
+needs from queue.
