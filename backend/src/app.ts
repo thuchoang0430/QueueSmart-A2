@@ -1,52 +1,35 @@
-<<<<<<< HEAD
-import cors from "cors";
-import express, { type Express } from "express";
-import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
-import authRoutes from "./modules/auth/auth.routes";
-import queueRoutes from "./modules/queues/queues.routes";
-import servicesRoutes from "./modules/services/services.routes";
-=======
 import cors from 'cors'
 import express, { type Express } from 'express'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler'
 import authRoutes from './modules/auth/auth.routes'
 import historyRoutes from './modules/history/history.routes'
+import notificationsRoutes from './modules/notifications/notifications.routes'
+import queueRoutes from './modules/queues/queues.routes'
 import servicesRoutes from './modules/services/services.routes'
->>>>>>> origin/main
 
 /**
  * Builds the Express app without starting a server, so Supertest can drive it
  * in tests. `index.ts` is the only place that calls listen().
  */
 export function createApp(): Express {
-  const app = express();
+  const app = express()
 
-  app.use(cors());
-  app.use(express.json());
+  app.use(cors())
+  app.use(express.json())
 
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok" });
-  });
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok' })
+  })
 
-<<<<<<< HEAD
-  app.use("/api/auth", authRoutes);
-  app.use("/api/services", servicesRoutes);
-  app.use("/api/queues", queueRoutes);
-
-  // Register future routers here:
-=======
   app.use('/api/auth', authRoutes)
   app.use('/api/services', servicesRoutes)
+  app.use('/api/queues', queueRoutes)
   app.use('/api/history', historyRoutes)
-  // Register new routers here:
-  // app.use('/api/queues', queueRoutes)
->>>>>>> origin/main
-  // app.use('/api/notifications', notificationRoutes)
+  app.use('/api/notifications', notificationsRoutes)
 
-  // These two must stay last - notFound catches unmatched routes and
-  // errorHandler turns every thrown ApiError into the shared error body.
-  app.use(notFoundHandler);
-  app.use(errorHandler);
+  // These two must stay last.
+  app.use(notFoundHandler)
+  app.use(errorHandler)
 
-  return app;
+  return app
 }
