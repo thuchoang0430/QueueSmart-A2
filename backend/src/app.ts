@@ -27,7 +27,6 @@ export function createApp(): Express {
 
   // app.use('/api/notifications', notificationRoutes)
 
-  // These two must stay last.
   app.use(notFoundHandler)
   app.use(errorHandler)
 
