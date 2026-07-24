@@ -162,29 +162,11 @@ admin@test.com
 Password:
 password
 ```
-
----
-
-## Assignment Requirements Completed
-
-- Authentication Module
-- Service Management Module
-- Queue Management Module
-- Wait-Time Estimation
-- Notification Module
-- History Module
-- Backend Validation
-- Frontend Integration
-- Unit Tests
-- REST APIs
-- In-memory Data Storage
-
 ---
 
 ## Notes
 
 - Data is stored in memory.
-- No database is required for Assignment 3.
 - Backend APIs are consumed by the React frontend.
 - GitHub Pages hosts the frontend only.
 - Local development requires both backend and frontend servers.
