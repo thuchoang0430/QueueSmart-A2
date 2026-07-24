@@ -7,6 +7,7 @@ const SIDEBAR_LINKS = [
   { to: "/join-queue", label: "Join Queue", icon: "➕" },
   { to: "/queue-status", label: "Queue Status", icon: "⏳" },
   { to: "/history", label: "History", icon: "🕧" },
+  { to: "/notifications", label: "Notifications", icon: "🔔" },
 ];
 
 function UserDashboard(): ReactElement {
@@ -52,9 +53,6 @@ function UserDashboard(): ReactElement {
                 </p>
               </NavLink>
             ))}
-            <div className="text-slate-300 py-2 px-2">
-              <p>🔔 Notifications</p>
-            </div>
             <div className="text-slate-300 py-2 px-2">
               <p>🙎🏻 Team Members</p>
             </div>

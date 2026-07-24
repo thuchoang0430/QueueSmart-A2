@@ -7,6 +7,7 @@ const USER_LINKS = [
   { to: '/join-queue', label: 'Join Queue' },
   { to: '/queue-status', label: 'Queue Status' },
   { to: '/history', label: 'History' },
+  { to: '/notifications', label: 'Notifications' },
 ]
 
 export default function UserLayout() {
