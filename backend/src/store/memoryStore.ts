@@ -187,6 +187,31 @@ function seedHistory(): HistoryRecord[] {
   ]
 }
 
+// A couple of notifications for the seeded student (id 1) so the notifications
+// UI shows real backend data before the queue module starts triggering live
+// ones (via the notify* helpers in the notifications module).
+function seedNotifications(): Notification[] {
+  const now = Date.now()
+  return [
+    {
+      id: 1,
+      userId: 1,
+      type: 'joined',
+      message: 'You joined the queue for Academic Advising.',
+      createdAt: now - 12 * 60 * 1000,
+      read: true,
+    },
+    {
+      id: 2,
+      userId: 1,
+      type: 'almost-up',
+      message: 'You are almost up for Academic Advising. Please be ready.',
+      createdAt: now - 2 * 60 * 1000,
+      read: false,
+    },
+  ]
+}
+
 /**
  * Restores the store to its seeded state. Every test file must call this in
  * `beforeEach` - in-memory state is shared across tests in a file and one
@@ -197,14 +222,14 @@ export function resetStore(): void {
   store.services = seedServices()
   store.queueEntries = []
   store.history = seedHistory()
-  store.notifications = []
+  store.notifications = seedNotifications()
   store.sessions = new Map()
 
   counters.users = store.users.length
   counters.services = store.services.length
   counters.queueEntries = 0
   counters.history = store.history.length
-  counters.notifications = 0
+  counters.notifications = store.notifications.length
 }
 
 resetStore()

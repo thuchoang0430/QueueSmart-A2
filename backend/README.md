@@ -94,10 +94,14 @@ are plain text for the same reason; hashing lands with persistence in A4.
 | Services | `GET /api/services`, `GET /api/services/:id`, `POST`, `PUT /:id`, `PATCH /:id/status` | Ayush | ✅ backend (page not wired) |
 | Queue | `POST/DELETE /api/queues/:serviceId/join\|leave`, `GET /api/queues/:serviceId`, `POST /api/queues/:serviceId/serve-next`, `GET /api/queues/:serviceId/me` | Ngoc | 🟡 on branch, needs tests |
 | Wait time | (logic used by queue) | Ngoc | 🟡 on branch |
-| Notifications | `GET /api/notifications` | | ⬜ |
+| Notifications | `GET /api/notifications`, `POST /api/notifications/read` | Andy | ✅ |
 | History | `GET /api/history` | Andy | ✅ |
 
 **Queue → History hook:** when the queue module removes a user (leave or
 serve-next), call `recordHistory(...)` from `modules/history/history.service.ts`
-so the visit shows up on the History page. That is the only wiring history
-needs from queue.
+so the visit shows up on the History page.
+
+**Queue → Notifications hook:** the queue module should call the notify helpers
+from `modules/notifications/notifications.service.ts` when queue state changes:
+`notifyQueueJoined(userId, serviceName)` on join, `notifyAlmostServed(...)` when
+a user reaches the front, `notifyServed(...)` on serve-next.
