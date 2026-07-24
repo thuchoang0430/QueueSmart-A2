@@ -1,4 +1,10 @@
 import { ApiError } from "../../errors";
+import { recordHistory } from "../history/history.service";
+import {
+  notifyAlmostServed,
+  notifyQueueJoined,
+  notifyServed,
+} from "../notifications/notifications.service";
 import {
   nextId,
   store,
@@ -120,6 +126,8 @@ export function joinQueue(
 
   store.queueEntries.push(newEntry);
 
+  notifyQueueJoined(userId, service.name);
+
   const joinedEntry = listQueue(serviceId).find(
     (entry) => entry.id === newEntry.id,
   );
@@ -132,7 +140,7 @@ export function joinQueue(
 }
 
 export function leaveQueue(serviceId: number, userId: number): QueueEntry {
-  findService(serviceId);
+  const service = findService(serviceId);
 
   const entryIndex = store.queueEntries.findIndex(
     (entry) => entry.serviceId === serviceId && entry.userId === userId,
@@ -143,12 +151,19 @@ export function leaveQueue(serviceId: number, userId: number): QueueEntry {
   }
 
   const removedEntries = store.queueEntries.splice(entryIndex, 1);
-
   const removedEntry = removedEntries[0];
 
   if (!removedEntry) {
     throw new Error("The queue entry could not be removed.");
   }
+
+  recordHistory({
+    userId: removedEntry.userId,
+    serviceId: removedEntry.serviceId,
+    serviceName: service.name,
+    joinedAt: removedEntry.joinedAt,
+    outcome: "left",
+  });
 
   return removedEntry;
 }
@@ -169,6 +184,7 @@ export function getUserQueueStatus(
 }
 
 export function serveNext(serviceId: number): QueueEntryWithWaitTime {
+  const service = findService(serviceId);
   const queue = listQueue(serviceId);
   const nextUser = queue[0];
 
@@ -185,6 +201,23 @@ export function serveNext(serviceId: number): QueueEntryWithWaitTime {
   }
 
   store.queueEntries.splice(entryIndex, 1);
+
+  recordHistory({
+    userId: nextUser.userId,
+    serviceId: nextUser.serviceId,
+    serviceName: service.name,
+    joinedAt: nextUser.joinedAt,
+    outcome: "served",
+  });
+
+  notifyServed(nextUser.userId, service.name);
+
+  const updatedQueue = listQueue(serviceId);
+  const newFirstEntry = updatedQueue[0];
+
+  if (newFirstEntry) {
+    notifyAlmostServed(newFirstEntry.userId, service.name);
+  }
 
   return nextUser;
 }
