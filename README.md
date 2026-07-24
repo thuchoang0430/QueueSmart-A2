@@ -1,6 +1,6 @@
 # QueueSmart – Smart Queue Management System
 
-QueueSmart is a full-stack queue management application developed for COSC Assignment 3. The project allows users to join service queues while administrators manage queues in real time through a RESTful API.
+QueueSmart is a full-stack queue management application developed for COSC. The project allows users to join service queues while administrators manage queues in real time through a RESTful API.
 
 ---
 
