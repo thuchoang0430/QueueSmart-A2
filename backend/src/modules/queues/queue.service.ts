@@ -42,7 +42,7 @@ export function estimateWaitTime(
   position: number,
   expectedDuration: number,
 ): number {
-  return position * expectedDuration;
+  return Math.max(0, position - 1) * expectedDuration;
 }
 
 export function compareQueueEntries(
