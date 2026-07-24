@@ -27,7 +27,6 @@ export function createApp(): Express {
   app.use('/api/history', historyRoutes)
   app.use('/api/notifications', notificationsRoutes)
 
-  // These two must stay last.
   app.use(notFoundHandler)
   app.use(errorHandler)
 
