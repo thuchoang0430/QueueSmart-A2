@@ -84,8 +84,8 @@ QueueSmart-A2/
 ### Clone Repository
 
 ```bash
-git clone https://github.com/thuchoang0430/QueueSmart-A2.git
-cd QueueSmart-A2
+git clone https://github.com/thuchoang0430/QueueSmart.git
+cd QueueSmart
 ```
 
 ---
